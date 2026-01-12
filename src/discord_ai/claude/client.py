@@ -54,7 +54,7 @@ class RealClaudeClient:
                         yield decoded
 
             await asyncio.wait_for(process.wait(), timeout=self.settings.claude_timeout_seconds)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             process.kill()
             await process.wait()
             raise
