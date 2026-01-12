@@ -1,3 +1,4 @@
+import asyncio
 from collections.abc import AsyncIterator
 from typing import Protocol
 
@@ -28,4 +29,35 @@ class RealClaudeClient:
         self.settings = settings
 
     async def run_session(self, session_id: str, message: str) -> AsyncIterator[str]:
-        raise NotImplementedError("RealClaudeClient not yet implemented")
+        cmd = [
+            self.settings.claude_cli_path,
+            "--print",
+            "--output-format",
+            "stream-json",
+            "--verbose",
+            "--session-id",
+            session_id,
+            message,
+        ]
+
+        process = await asyncio.create_subprocess_exec(
+            *cmd,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+
+        try:
+            if process.stdout:
+                async for line in process.stdout:
+                    decoded = line.decode().strip()
+                    if decoded:
+                        yield decoded
+
+            await asyncio.wait_for(process.wait(), timeout=self.settings.claude_timeout_seconds)
+        except asyncio.TimeoutError:
+            process.kill()
+            await process.wait()
+            raise
+        finally:
+            if process.stderr:
+                await process.stderr.read()
