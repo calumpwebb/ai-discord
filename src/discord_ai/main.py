@@ -6,6 +6,7 @@ from discord_ai.bot import create_bot
 from discord_ai.claude.client import RealClaudeClient
 from discord_ai.discord_client import RealDiscordClient
 from discord_ai.handlers.messages import MessageHandler
+from discord_ai.handlers.ready import on_ready as ready_handler
 from discord_ai.logging_config import setup_logging
 from discord_ai.settings import Settings
 
@@ -31,6 +32,10 @@ def main():
     discord_client = RealDiscordClient(bot)
 
     message_handler = MessageHandler(claude_client, discord_client, settings)  # noqa: F841
+
+    @bot.event
+    async def on_ready():
+        await ready_handler(bot, settings)
 
     logger.info("discord_ai.bot.starting")
     try:
