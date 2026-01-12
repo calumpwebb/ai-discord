@@ -5,6 +5,7 @@ import structlog
 from discord_ai.bot import create_bot
 from discord_ai.claude.client import RealClaudeClient
 from discord_ai.discord_client import RealDiscordClient
+from discord_ai.handlers.channels import on_channel_create as channel_create_handler
 from discord_ai.handlers.messages import MessageHandler
 from discord_ai.handlers.ready import on_ready as ready_handler
 from discord_ai.logging_config import setup_logging
@@ -36,6 +37,10 @@ def main():
     @bot.event
     async def on_ready():
         await ready_handler(bot, settings)
+
+    @bot.event
+    async def on_guild_channel_create(channel):
+        await channel_create_handler(channel, settings)
 
     @bot.event
     async def on_message(message):

@@ -2,6 +2,8 @@ import sys
 
 import structlog
 
+from discord_ai.handlers.channels import initialize_channel
+
 logger = structlog.get_logger()
 
 
@@ -45,3 +47,8 @@ Available categories in server:
     logger.info(
         "discord_ai.category.found", category=category.name, channels=len(category.channels)
     )
+
+    for channel in category.channels:
+        await initialize_channel(channel)
+
+    logger.info("discord_ai.bot.ready_complete")
