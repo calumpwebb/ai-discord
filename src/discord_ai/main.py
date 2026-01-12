@@ -81,7 +81,7 @@ def main():
 
     logger.info("discord_ai.bot.starting")
     try:
-        bot.run(settings.discord_token)
+        bot.run(settings.discord_token, log_handler=None)
     except Exception as e:
         logger.error("discord_ai.bot.error", error=str(e))
         sys.exit(1)
