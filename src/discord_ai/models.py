@@ -45,7 +45,7 @@ class UserMessage(BaseModel):
     message: dict[str, Any]
     session_id: UUID
     uuid: UUID
-    tool_use_result: dict[str, Any] | None = None
+    tool_use_result: dict[str, Any] | str | None = None
 
 
 class ResultEvent(BaseModel):
