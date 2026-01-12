@@ -16,6 +16,9 @@ class FakeChannel:
     async def trigger_typing(self):
         self.typing_count += 1
 
+    async def typing(self):
+        await self.trigger_typing()
+
 
 class DiscordClient(Protocol):
     """Protocol for Discord API interaction"""

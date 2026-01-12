@@ -1,8 +1,12 @@
 import asyncio
 
+import structlog
+
 from discord_ai.claude.formatter import EventFormatter
 from discord_ai.claude.parser import StreamParser
 from discord_ai.utils.typing import typing_loop
+
+logger = structlog.get_logger()
 
 
 class MessageHandler:
@@ -18,7 +22,7 @@ class MessageHandler:
     async def handle_message(self, channel_id: str, session_id: str, content: str):
         channel = self.discord_client.get_channel(channel_id)
 
-        await channel.trigger_typing()
+        await channel.typing()
 
         interval = getattr(self.settings, "typing_interval_seconds", 5) if self.settings else 5
         typing_task = asyncio.create_task(typing_loop(channel, interval=interval))
@@ -27,6 +31,9 @@ class MessageHandler:
             async for event in self.parser.parse_stream(session_id, content):
                 messages = self.formatter.format_event(event)
                 for msg in messages:
+                    logger.info(
+                        "discord_ai.message.sending", channel_id=channel_id, content_length=len(msg)
+                    )
                     await self.discord_client.send_message(channel_id, msg)
         finally:
             typing_task.cancel()
