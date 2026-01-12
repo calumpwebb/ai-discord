@@ -18,7 +18,10 @@ class MessageHandler:
     async def handle_message(self, channel_id: str, session_id: str, content: str):
         channel = self.discord_client.get_channel(channel_id)
 
-        typing_task = asyncio.create_task(typing_loop(channel, interval=5))
+        await channel.trigger_typing()
+
+        interval = getattr(self.settings, "typing_interval_seconds", 5) if self.settings else 5
+        typing_task = asyncio.create_task(typing_loop(channel, interval=interval))
 
         try:
             async for event in self.parser.parse_stream(session_id, content):
