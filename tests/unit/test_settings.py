@@ -11,6 +11,12 @@ def test_loads_from_environment(monkeypatch):
 
 def test_uses_default_values(monkeypatch):
     monkeypatch.setenv("DISCORD_BOT_TOKEN", "test_token")
+    # Set env vars to default values to override any .env file settings
+    monkeypatch.setenv("CATEGORY_NAME", "Claude Conversations")
+    monkeypatch.setenv("CLAUDE_CLI_PATH", "claude")
+    monkeypatch.setenv("TYPING_INTERVAL_SECONDS", "5")
+    monkeypatch.setenv("CLAUDE_TIMEOUT_SECONDS", "600")
+    monkeypatch.setenv("LOG_LEVEL", "INFO")
 
     settings = Settings()
 

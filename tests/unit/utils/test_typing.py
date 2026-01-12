@@ -12,6 +12,9 @@ class FakeChannel:
     async def trigger_typing(self):
         self.typing_count += 1
 
+    async def typing(self):
+        await self.trigger_typing()
+
 
 @pytest.mark.asyncio
 async def test_typing_loop_sends_typing_indicator():
